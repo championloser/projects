@@ -62,16 +62,32 @@ void RssReader::parseRss(const char * filename)
 	{
 		xtmp=item->FirstChildElement("title");
 		if(NULL==xtmp)tmp.title="";
-		else tmp.title=xtmp->GetText();
+		else {
+			const char *cstr=xtmp->GetText();
+			if(NULL==cstr)tmp.title="";
+			else tmp.title=cstr;
+		}
 		xtmp=item->FirstChildElement("link");
 		if(NULL==xtmp)tmp.link="";
-		else tmp.link=xtmp->GetText();
+		else {
+			const char *cstr=xtmp->GetText();
+			if(NULL==cstr)tmp.link="";
+			else tmp.link=cstr;
+		}
 		xtmp=item->FirstChildElement("description");
 		if(NULL==xtmp)tmp.description="";
-		else tmp.description=xtmp->GetText();
+		else {
+			const char *cstr=xtmp->GetText();
+			if(NULL==cstr)tmp.description="";
+			else tmp.description=cstr;
+		}
 		xtmp=item->FirstChildElement("content:encoded");
-		if(NULL==xtmp)tmp.content="";
-		else tmp.content=std::regex_replace(xtmp->GetText(), reg, "");
+		if(NULL==xtmp)tmp.content=tmp.description;
+		else {
+			const char *cstr=xtmp->GetText();
+			if(NULL==cstr)tmp.content=tmp.description;
+			else tmp.content=std::regex_replace(cstr, reg, "");
+		}
 		_rss.push_back(tmp);
 		item=item->NextSiblingElement("item");
 	}
