@@ -32,16 +32,19 @@ void RssReader::findParseDumpRss(const char *path)
 	std::regex reg("[A-Za-z0-9]+\\.xml");
 	DIR *dir=opendir(path);
 	struct dirent *p;
+	static int totalItem=0;
 	while((p=readdir(dir))!=NULL)
 	{
 		if(regex_match(p->d_name, reg))
 		{
 			cout<<"parsing '"<<p->d_name<<"'..."<<endl;
 			parseRss(p->d_name);
-			cout<<"dumpping '"<<p->d_name<<"'..."<<endl;
+			cout<<"dumpping '"<<p->d_name<<"'...  "<<_rss.size()<<" items"<<endl;
+			totalItem+=_rss.size();
 			dump("pagelib.dat");
 		}
 	}
+	cout<<"The total item is "<<totalItem<<endl;
 }
 void RssReader::parseRss(const char * filename)
 {
@@ -49,17 +52,26 @@ void RssReader::parseRss(const char * filename)
 	XMLDocument doc;	
 	doc.LoadFile(filename);
 	XMLElement *rss=doc.FirstChildElement("rss");
+	if(NULL==rss)return;
 	XMLElement *channel=rss->FirstChildElement("channel");
+	if(NULL==channel)return;
 	XMLElement *item=channel->FirstChildElement("item");
+	XMLElement *xtmp;
 	RssItem tmp;
 	while(item)
 	{
-		tmp.title=item->FirstChildElement("title")->GetText();
-		tmp.link=item->FirstChildElement("link")->GetText();
-		tmp.description=item->FirstChildElement("description")->GetText();
-		const char *content=item->FirstChildElement("content:encoded")->GetText();
-		if(NULL==content)tmp.content=tmp.description;
-		else tmp.content=std::regex_replace(content, reg, "");
+		xtmp=item->FirstChildElement("title");
+		if(NULL==xtmp)tmp.title="";
+		else tmp.title=xtmp->GetText();
+		xtmp=item->FirstChildElement("link");
+		if(NULL==xtmp)tmp.link="";
+		else tmp.link=xtmp->GetText();
+		xtmp=item->FirstChildElement("description");
+		if(NULL==xtmp)tmp.description="";
+		else tmp.description=xtmp->GetText();
+		xtmp=item->FirstChildElement("content:encoded");
+		if(NULL==xtmp)tmp.content="";
+		else tmp.content=std::regex_replace(xtmp->GetText(), reg, "");
 		_rss.push_back(tmp);
 		item=item->NextSiblingElement("item");
 	}
