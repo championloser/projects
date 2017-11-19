@@ -18,7 +18,12 @@ Mylog::Mylog(const char *filename)
 : _root(Category::getRoot())
 {
 	OstreamAppender *osAppender=new OstreamAppender("osAppender",&std::cout);
+#if ISROLLINGFILE
+	RollingFileAppender *fAppender=new RollingFileAppender("fAppender", filename, 
+								ROLLINGFILESIZE, ROLLINGFILENUM);
+#else
 	FileAppender *fAppender=new FileAppender("fAppender",filename);
+#endif
 	PatternLayout *pLayout1=new PatternLayout();
 	pLayout1->setConversionPattern("%d: [%p]: %m%n");
 	osAppender->setLayout(pLayout1);

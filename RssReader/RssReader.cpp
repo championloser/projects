@@ -107,6 +107,7 @@ void RssReader::dump(const char *filename)
 		  <<"</doc>\n";
 	}
 	_rss.clear();
+	ofs.close();
 }
 int main(int argc, char *argv[])
 {
