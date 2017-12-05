@@ -9,8 +9,6 @@
 using namespace std;
 int main()
 {
-	for(int i=0; i<10000; i++)
-	{
 	LogEmerg("This is an emerg message");
 	LogFatal("This is a Fatal message");
 	LogAlert("This is a Alert message");
@@ -20,6 +18,5 @@ int main()
 	LogNotice("This is a notice message");
 	LogInfo("This is a info message");
 	LogDebug("This is a debug message");
-	}
 	return 0;
 }
